@@ -256,10 +256,10 @@ function DecodeWeather(currentData)
 		"code":           currentData.weather[0].id,
 		"human_readable": WEATHER_CODES[currentData.weather[0].id]
 	}
-	result["wind_speed"]     = currentData.wind.speed * 3.6;
+	result["wind_speed"]     = Math.round(currentData.wind.speed * 3.6);
 
 	if (currentData.wind.gust !== undefined)
-		result["wind_gusts"] = currentData.wind.gust * 3.6;
+		result["wind_gusts"] = Math.round(currentData.wind.gust * 3.6);
 
 	if (currentData.wind.deg !== undefined)
 		result["wind_heading"] = currentData.wind.deg;
