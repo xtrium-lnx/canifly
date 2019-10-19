@@ -4,6 +4,7 @@
   "description": "Small utility to check whether I can take off or not.",
   "main": "main.js",
   "scripts": {
+	"start": "node main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
