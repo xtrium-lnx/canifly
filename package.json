@@ -1,0 +1,34 @@
+{
+  "name": "canifly",
+  "version": "0.1.0",
+  "description": "Small utility to check whether I can take off or not.",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xtrium-lnx/canifly.git"
+  },
+  "keywords": [
+    "microlight",
+    "trike",
+    "ulm",
+    "flight",
+    "aviation",
+    "weather"
+  ],
+  "author": "Charles 'xtrium' Riffaud-Declercq",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/xtrium-lnx/canifly/issues"
+  },
+  "homepage": "https://github.com/xtrium-lnx/canifly#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "csv-parser": "^2.3.1",
+    "express": "^4.17.1",
+    "https": "^1.0.0",
+    "path": "^0.12.7"
+  }
+}
