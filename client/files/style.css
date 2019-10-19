@@ -95,3 +95,20 @@ body.mainpage {
 .ui.detail table td {
 	width: 20%;
 }
+
+td.image img.warn {
+	filter: invert(52%) sepia(78%) saturate(1569%) hue-rotate(359deg) brightness(101%) contrast(107%);
+}
+
+.warn {
+	color: #f80;
+}
+
+td.image img.nogo {
+	filter: invert(50%) sepia(50%) saturate(7491%) hue-rotate(340deg) brightness(97%) contrast(300%);
+}
+
+.nogo {
+	color: #f00;
+}
+

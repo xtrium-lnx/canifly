@@ -32,13 +32,18 @@ function ComputeVerdict(result)
 
 	if (result.verdict == 1.0)
 		$("#verdict_container").html("Yes");
-	else if (result.verdict == 0.0)
+	else
 	{
+		if (result.verdict < 0.01)
+			$("#verdict_container").html("No");
+		else
+			$("#verdict_container").html('Yes, but...');
+
 		for(var vid in result.interpretation.scores)
 		{
 			var val = result.interpretation.scores[vid];
 
-			if (val > 0.0)
+			if (val > 0.01)
 				continue;
 			
 			var reason = "";
@@ -53,19 +58,15 @@ function ComputeVerdict(result)
 			case "cloud_coverage": reason = "Cloud coverage prevents flying";  break;
 			case "vfrConditions":  reason = "It's night time";                 break;
 			}
-
-			$("<p>" + reason + "</p>").appendTo("#reasons");
+			
+			$("<p class=\"nogo\">" + reason + "</p>").appendTo("#reasons");
 		}
 
-		$("#verdict_container").html("No");
-	}
-	else
-	{
 		for(var vid in result.interpretation.scores)
 		{
 			var val = result.interpretation.scores[vid];
 
-			if (val == 1.0)
+			if (val == 1.0 || val < 0.01)
 				continue;
 			
 			var nuance = "";
@@ -78,17 +79,15 @@ function ComputeVerdict(result)
 			{
 			case "wind":           reason = "There is " + (val > 0.5 ? "a bit of " : "") + "wind";  break;
 			case "gusts":          reason = "It is " + (val > 0.5 ? "a bit " : "") + "gusty";       break;
-			case "crosswind":      reason = "There is " + (val > 0.5 ? "some " : "") + "crosswind"; break;
+			case "crosswind":      reason = "There is " + (val > 0.5 ? "a bit of " : "") + "crosswind"; break;
 			case "precipitation":  reason = "It's raining / snowing " + (val > 0.5 ? "a bit" : ""); break;
 			case "temperature":    reason = "It's " + (val > 0.5 ? "a bit " : "") + "cold";         break;
 			case "cloud_coverage": reason = "It's " + (val > 0.5 ? "a bit " : "") + "cloudy";       break;
-			case "vfrConditions":  reason = "The sun is setting soon";                              break;
+			case "vfrConditions":  reason = "The sun is going down soon";                           break;
 			}
 
-			$("<p>" + reason + "</p>").appendTo("#reasons");
+			$("<p class=\"warn\">" + reason + "</p>").appendTo("#reasons");
 		}
-
-		$("#verdict_container").html('Yes, but...');
 	}
 
 	SetVerdictColor(result.verdict, result.interpretation.scores.vfrConditions);
@@ -149,24 +148,57 @@ function ComputeWeather(result)
 	$('#wind_unit').html(result.units.wind_speed);
 	$('#wind_heading').html(result.weather.wind_heading);
 
-	var hasGusts = false;
-
 	if (result.weather.wind_gusts !== undefined)
-	{
-		if (result.weather.wind_gusts <= result.units.wind_speed)
-		{
-			$("#wind_gusts").html("<br />Gusts up to " + result.weather.wind_gusts + " " + result.units.wind_speed);
-			hasGusts = true;
-		}
-	}
-	
-	if (!hasGusts)
+		$("#wind_gusts").html("<br />Gusts up to " + result.weather.wind_gusts + " " + result.units.wind_speed);
+	else
 		$("#wind_gusts").html("");
 
 	var sunrise = new Date(result.daylight.civil_twilight_begin);
 	var sunset  = new Date(result.daylight.civil_twilight_end);
 	$('#sunrise').html(sunrise.getHours() + ":" + sunrise.getMinutes());
 	$('#sunset').html(sunset.getHours() + ":" + sunset.getMinutes());
+
+	if (result.interpretation.scores.wind < 1 || result.interpretation.scores.gusts < 1 || result.interpretation.scores.crosswind < 1)
+	{
+		if (result.interpretation.scores.wind < 0.01 || result.interpretation.scores.gusts < 0.01 || result.interpretation.scores.crosswind < 0.01)
+		{
+			$('.wind.image img').addClass("nogo");
+			$('.wind.content').addClass("nogo");
+		}
+		else
+		{
+			$('.wind.image img').addClass("warn");
+			$('.wind.content').addClass("warm");
+		}
+	}
+
+	if (result.interpretation.scores.vfrConditions < 1)
+	{
+		if (result.interpretation.scores.vfrConditions < 0.01)
+		{
+			$('.sunset.image img').addClass("nogo");
+			$('.sunset.content').addClass("nogo");
+		}
+		else
+		{
+			$('.sunset.image img').addClass("warn");
+			$('.sunset.content').addClass("warn");
+		}
+	}
+
+	if (result.interpretation.scores.cloud_coverage < 1)
+	{
+		if (result.interpretation.scores.cloud_coverage < 0.01)
+		{
+			$('.cloud_coverage.image img').addClass("nogo");
+			$('.cloud_coverage.content').addClass("nogo");
+		}
+		else
+		{
+			$('.cloud_coverage.image img').addClass("warn");
+			$('.cloud_coverage.content').addClass("warn");
+		}
+	}
 }
 
 $(document).ready(function() {
