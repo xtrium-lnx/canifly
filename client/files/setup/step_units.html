@@ -1,0 +1,59 @@
+<h3 class="ui" style="text-align: center;">Awesome! Let's agree on units now.</h3>
+<h4 class="ui" style="text-align: center; font-style: italic;">Select all the units you want to use, then click the Next button.</h4>
+
+<div class="ui" style="padding-top: 16px;">
+	<div class="ui fluid selection dropdown">
+		<input type="hidden" id="step_units_altitude">
+		<i class="dropdown icon"></i>
+		<div class="default text">Altitude</div>
+		<div class="menu">
+			<div class="item" data-value="ft">Feet</div>
+			<div class="item" data-value="m">Meters</div>
+		</div>
+	</div>
+
+	<br /><br />
+
+	<div class="ui fluid selection dropdown">
+		<input type="hidden" id="step_units_aircraft_speed">
+		<i class="dropdown icon"></i>
+		<div class="default text">Aircraft speed</div>
+		<div class="menu">
+			<div class="item" data-value="km/h">Kilometers per hour</div>
+			<div class="item" data-value="mph">(Statute) miles per hour</div>
+			<div class="item" data-value="kt">Knots</div>
+		</div>
+	</div>
+
+	<br /><br />
+
+	<div class="ui fluid selection dropdown">
+		<input type="hidden" id="step_units_wind_speed">
+		<i class="dropdown icon"></i>
+		<div class="default text">Wind speed</div>
+		<div class="menu">
+			<div class="item" data-value="km/h">Kilometers per hour</div>
+			<div class="item" data-value="mph">(Statute) miles per hour</div>
+			<div class="item" data-value="kt">Knots</div>
+		</div>
+	</div>
+
+	<br /><br />
+
+	<div class="ui fluid selection dropdown">
+		<input type="hidden" id="step_units_temperature">
+		<i class="dropdown icon"></i>
+		<div class="default text">Temperature</div>
+		<div class="menu">
+			<div class="item" data-value="f">Fahrenheit</div>
+			<div class="item" data-value="c">Celcius</div>
+		</div>
+	</div>
+
+	<br /><br />
+
+	<button onclick="SaveUnits(); NextStep();" class="ui right floated animated positive button">
+		<div class="hidden content"><i class="right arrow icon"></i></div>
+		<div class="visible content">Next</div>
+	</button>
+</div>

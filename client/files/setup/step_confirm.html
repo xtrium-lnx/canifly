@@ -1,0 +1,99 @@
+<h3 class="ui" style="text-align: center;">Let's recap!</h3>
+<h4 class="ui" style="text-align: center; font-style: italic;">Double-check everything, then click Finish.</h4>
+
+<div class="ui" style="padding-top: 16px;">
+	<div class="ui raised segment">
+		<a class="ui ribbon label">Location</a>
+		<br /><br />
+		<h3 id="step_confirm_location">Airport location</h3>
+		<div id="step_confirm_runways"></div>
+	</div>
+
+	<div class="ui raised segment">
+		<a class="ui ribbon label">Units</a>
+		<br /><br />
+		<ul>
+			<li>Altitude is in <span id="step_confirm_units_altitude" style="font-weight: bold;"></span></li>
+			<li>Aircraft speed is in <span id="step_confirm_aircraft_speed" style="font-weight: bold;"></span></li>
+			<li>Wind speed is in  <span id="step_confirm_wind_speed" style="font-weight: bold;"></span></li>
+			<li>Temperature is in <span id="step_confirm_units_temperature" style="font-weight: bold;"></span></li>
+		</ul>
+	</div>
+
+	<div class="ui raised segment">
+		<a class="ui ribbon label">Weather conditions</a>
+		<br /><br />
+		<table class="ui celled table">
+			<thead>
+				<tr>
+					<th>Phenomenon</th>
+					<th>Ideal</th>
+					<th>Acceptable</th>
+					<th>More info</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td data-label="Phenomenon">Temperature</td>
+					<td data-label="Ideal"><span id="step_confirm_weather_temperature_ideal" style="font-weight: bold;"></span><span class="ui temperature unit"></span> or more</td>
+					<td data-label="Acceptable"><span id="step_confirm_weather_temperature_acceptable" style="font-weight: bold;"></span><span class="ui temperature unit"></span> or more</td>
+					<td data-label="More info"></td>
+				</tr>
+				
+				<tr>
+					<td data-label="Phenomenon">Precipitation</td>
+					<td data-label="Ideal"><span id="step_confirm_weather_rain_level_ideal"></span> at most</td>
+					<td data-label="Acceptable"><span id="step_confirm_weather_rain_level_acceptable"></span> at most</td>
+					<td data-label="More info">
+						<ul class="ui list">
+							<li>Freezing rain is <span id="step_confirm_weather_rain_allow_freezing" style="font-weight: bold;"></span></li>
+							<li>Snow is <span id="step_confirm_weather_rain_allow_snow" style="font-weight: bold;"></span></li>
+							<li>Hail is <span id="step_confirm_weather_rain_allow_hail" style="font-weight: bold;"></span></li>
+						</ul>
+					</td>
+				</tr>
+
+				<tr>
+					<td data-label="Phenomenon">Cloud base</td>
+					<td data-label="Ideal"><span id="step_confirm_weather_cloudbase_ideal" style="font-weight: bold;"></span> <span class="ui altitude unit"></span> AGL or more</td>
+					<td data-label="Acceptable"><span id="step_confirm_weather_cloudbase_acceptable" style="font-weight: bold;"></span> <span class="ui altitude unit"></span> AGL or more</td>
+					<td data-label="More info">Ignored if coverage is <span id="step_confirm_weather_cloudbase_coverage_percent" style="font-weight: bold;">50</span>% or less</td>
+				</tr>
+
+				<tr>
+					<td data-label="Phenomenon">Wind</td>
+					<td data-label="Ideal"><span id="step_confirm_weather_windspeed_ideal" style="font-weight: bold;"></span> <span class="ui windspeed unit"></span> or less</td>
+					<td data-label="Acceptable"><span id="step_confirm_weather_windspeed_acceptable" style="font-weight: bold;"></span> <span class="ui windspeed unit"></span> or less</td>
+					<td data-label="More info"></td>
+				</tr>
+
+				<tr>
+					<td data-label="Phenomenon">Gusts</td>
+					<td data-label="Ideal"><span id="step_confirm_weather_gusts_ideal" style="font-weight: bold;"></span> <span class="ui windspeed unit"></span> or less</td>
+					<td data-label="Acceptable"><span id="step_confirm_weather_gusts_acceptable" style="font-weight: bold;"></span> <span class="ui windspeed unit"></span> or less</td>
+					<td data-label="More info"></td>
+				</tr>
+
+				<tr>
+					<td data-label="Phenomenon">Crosswind</td>
+					<td data-label="Ideal"><span id="step_confirm_weather_crosswind_ideal" style="font-weight: bold;"></span> <span class="ui windspeed unit"></span> or less</td>
+					<td data-label="Acceptable"><span id="step_confirm_weather_crosswind_acceptable" style="font-weight: bold;"></span> <span class="ui windspeed unit"></span> or less</td>
+					<td data-label="More info"></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<br /><br />
+	
+	<div style="text-align: center;">
+		<h3>All good? Click on Finish to proceed.</h3>
+
+		<button onclick="Finish();" class="ui big animated positive button">
+			<div class="hidden content"><i class="right arrow icon"></i></div>
+			<div class="visible content">Finish</div>
+		</button>
+	</div>
+
+	<br /><br />
+</div>

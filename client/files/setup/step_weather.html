@@ -1,0 +1,163 @@
+<h3 class="ui" style="text-align: center;">Noted. Now, let me ask a few questions about your flying habits.</h3>
+<h4 class="ui" style="text-align: center; font-style: italic;">Fill all values below, then click the Next button.</h4>
+
+<div class="ui" style="padding-top: 16px;">
+	<div class="ui raised segment">
+		<a class="ui ribbon label">Temperature</a>
+		<br /><br />
+		I can fly when temperature is <div class="ui right labeled input">
+			<input type="number" id="steps_weather_temperature_acceptable" />
+			<div class="ui basic label temperature unit"></div>
+		</div> or more...
+
+		<br /><br />
+
+		...but <div class="ui right labeled input">
+			<input type="number" id="steps_weather_temperature_ideal" />
+			<div class="ui basic label temperature unit"></div>
+		</div> or more is ideal.
+	</div>
+
+	<div class="ui raised segment">
+		<a class="ui ribbon label">Precipitation</a>
+		<br /><br />
+		
+		I can deal with <div class="ui selection dropdown">
+			<input type="hidden" id="steps_weather_rain_level_acceptable">
+			<i class="dropdown icon"></i>
+			<div class="default text">Rain level</div>
+			<div class="menu">
+				<div class="item" data-value="0">No rain</div>
+				<div class="item" data-value="1">Light rain</div>
+				<div class="item" data-value="2">Moderate rain</div>
+				<div class="item" data-value="3">Heavy rain</div>
+				<div class="item" data-value="4">Very heavy rain</div>
+				<div class="item" data-value="5">Extreme rain</div>
+			</div> at most...
+		</div>
+
+		<br /><br />
+
+		... but <div class="ui selection dropdown">
+			<input type="hidden" id="steps_weather_rain_level_ideal">
+			<i class="dropdown icon"></i>
+			<div class="default text">Rain level</div>
+			<div class="menu">
+				<div class="item" data-value="0">No rain</div>
+				<div class="item" data-value="1">Light rain</div>
+				<div class="item" data-value="2">Moderate rain</div>
+				<div class="item" data-value="3">Heavy rain</div>
+				<div class="item" data-value="4">Very heavy rain</div>
+				<div class="item" data-value="5">Extreme rain</div>
+			</div> or less is perfect.
+		</div>
+
+		<br /><br />
+
+		<div class="ui toggle checkbox">
+			<input type="checkbox" id="steps_weather_rain_allow_freezing">
+			<label>Allow freezing rain</label>
+		</div>
+
+		<br /><br />
+
+		<div class="ui toggle checkbox">
+			<input type="checkbox" id="steps_weather_rain_allow_snow">
+			<label>Allow snow</label>
+		</div>
+
+		<br /><br />
+
+		<div class="ui toggle checkbox">
+			<input type="checkbox" id="steps_weather_rain_allow_hail">
+			<label>Allow hail</label>
+		</div>
+	</div>
+
+	<div class="ui raised segment">
+		<a class="ui ribbon label">Cloud coverage</a>
+		<br /><br />
+		I can fly with a cloud base as low as <div class="ui right labeled input">
+			<input type="number" id="steps_weather_cloudbase_acceptable" />
+			<div class="ui basic label altitude unit"></div>
+		</div> AGL...
+
+		<br /><br />
+
+		...but <div class="ui right labeled input">
+			<input type="number" id="steps_weather_cloudbase_ideal" />
+			<div class="ui basic label altitude unit"></div>
+		</div> AGL or more is perfect.
+
+		<br /><br />
+
+		If cloud coverage is less than <div class="ui right labeled input">
+			<input type="number" id="steps_weather_cloudbase_coverage_percent" />
+			<div class="ui basic label">%</div>
+		</div> , I don't care.
+	</div>
+
+	<div class="ui raised segment">
+		<a class="ui ribbon label">Wind, in general</a>
+		<br /><br />
+		I can fly with wind speeds up to <div class="ui right labeled input">
+			<input type="number" id="steps_weather_wind_acceptable" />
+			<div class="ui basic label windspeed unit"></div>
+		</div> ...
+
+		<br /><br />
+
+		...but <div class="ui right labeled input">
+			<input type="number" id="steps_weather_wind_ideal" />
+			<div class="ui basic label windspeed unit"></div>
+		</div> or less is perfect.
+	</div>
+
+	<div class="ui raised segment">
+		<a class="ui ribbon label">Wind - gusts</a>
+		<br /><br />
+		I can deal with <div class="ui right labeled input">
+			<input type="number" id="steps_weather_gust_acceptable" />
+			<div class="ui basic label windspeed unit"></div>
+		</div> gusts at most...
+
+		<br /><br />
+
+		...but I prefer <div class="ui right labeled input">
+			<input type="number" id="steps_weather_gust_ideal" />
+			<div class="ui basic label windspeed unit"></div>
+		</div> gusts or less.
+	</div>
+
+	<div class="ui raised segment">
+		<a class="ui ribbon label">Crosswind</a>
+		<br /><br />
+		I can deal with crosswind speeds up to <div class="ui right labeled input">
+			<input type="number" id="steps_weather_crosswind_acceptable" />
+			<div class="ui basic label windspeed unit"></div>
+		</div> ...
+
+		<br /><br />
+
+		...but <div class="ui right labeled input">
+			<input type="number" id="steps_weather_crosswind_ideal" />
+			<div class="ui basic label windspeed unit"></div>
+		</div> or less is perfect.
+	</div>
+
+	<br /><br />
+
+	<p>Make sure all the information is correct, then click on Next :)</p>
+
+	<br /><br />
+
+	<button onclick="SaveWeather(); NextStep();" class="ui right floated animated positive button">
+		<div class="hidden content"><i class="right arrow icon"></i></div>
+		<div class="visible content">Next</div>
+	</button>
+
+	<br /><br />
+	<br /><br />
+	<br /><br />
+	<br /><br />
+</div>

@@ -1,0 +1,97 @@
+/* ************************************************************************* */
+/* ** Common settings ****************************************************** */
+
+@import url('https://fonts.googleapis.com/css?family=Open+Sans&display=swap');
+
+body
+{
+	font-family: 'Open Sans', arial, sans-serif;
+}
+
+/* ************************************************************************* */
+/* ** Setup settings ******************************************************* */
+
+.setup.greetcontainer {
+	position: absolute;
+	z-index: 10;
+	opacity: 0;
+	width: 100%;
+	text-align:  center;
+
+	transition: opacity 1s;
+}
+
+.setup.greetcontainer.visible {
+	opacity: 1;
+}
+
+.setup.greeter { 
+	font-size: 5em;
+	font-weight: lighter;
+}
+
+.setup.header {
+	margin: 24px;
+}
+
+.setup.curtain {
+	position: absolute;
+	z-index: 5;
+
+	margin: 0;
+	padding: 0;
+
+	width: 100%;
+	height: 100%;
+
+	background-color: white;
+	opacity: 1;
+	transition: opacity 1s;
+}
+
+.setup.curtain.hidden {
+	opacity: 0;
+}
+
+/* ************************************************************************* */
+/* ** Main settings ******************************************************** */
+
+body.mainpage {
+	background-color: #222;
+	color: #aaa;
+}
+
+.ui.detail {
+	margin-top: 24px;
+}
+
+.ui.reasons {
+	text-align: center;
+	font-size: 1.4em;
+	padding-top: 16px;
+}
+
+.ui.reasons p {
+	line-height: 1em;
+}
+
+#verdict_container {
+	border-radius: 6px;
+	width: 100%;
+	font-size: 3.5em;
+	font-weight: bold;
+	text-align: center;
+	margin-top: 32px;
+	height: 96px;
+	line-height: 96px;
+}
+
+.ui.detail table {
+	width: 100%;
+	text-align: center;
+	margin-top: 32px;
+}
+
+.ui.detail table td {
+	width: 20%;
+}

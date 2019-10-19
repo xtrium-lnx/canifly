@@ -1,0 +1,12 @@
+<h3 class="ui" style="text-align: center; margin-top: 64px;">First, select your airport.</h3>
+<div class="ui fluid search selection dropdown">
+    <input type="hidden" name="lid" id="Location_LID">
+    <i class="dropdown icon"></i>
+    <div class="default text">Select location</div>
+    <div class="menu" id="locationmenu">
+    </div>
+</div>
+<button style="margin-top: 24px;" class="ui right floated animated positive button" onclick="SaveData('location', { lid: $('#Location_LID').val() }); NextStep();">
+	<div class="hidden content"><i class="right arrow icon"></i></div>
+	<div class="visible content">Next</div>
+</button>

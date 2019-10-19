@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <title>Can I Fly?</title>
+        <link rel="stylesheet" type="text/css" href="/vendor/semanticui/semantic.min.css">
+        <link rel="stylesheet" type="text/css" href="/style.css">
+    </head>
+
+    <body class="ui site mainpage">
+        <div class="ui container" id="main_container" style="width: 720px;">
+            <div class="ui centered container">
+                <div class="ui one column stackable center aligned page grid">
+                    <img class="setup header" src="/ulm-pendulaire.png" />
+                </div>
+            </div>
+
+            <div class="ui active centered massive inline text loader" id="loader" style="margin-top: 64px;">Loading...</div>
+
+            <div id="data_container" style="visibility: hidden;">
+                <h2 id="location" style="text-align: center; width: 100%;"></h2>
+
+                <div id="verdict_container"></div>
+
+                <div class="ui reasons" id="reasons">
+                </div>
+
+                <div class="ui divider"></div>
+
+                <div class="ui detail">
+                    <div style="float: left;">
+                        <img id="detail_icon" src="#" />
+                    </div>
+                    <div style="float: left;">
+                        <h1 style="float: left; line-height: 100px; margin: 0px;">
+                            <span id="temperature_value"></span>
+                            &deg;<span class="temperature unit"></span>
+                        </h1>
+                        <span style="float: left; margin-left: 16px; line-height: 100px;">(Dew point: <span id="dew_point"></span>&deg;<span class="temperature unit"></span>)</span>
+                    </div>
+                    <div style="float: right;">
+                        <h4 style="display: inline-block; line-height: 100px; margin: 0px;">Active runway: <span id="active_runway">02</span></h4>
+                    </div>
+                    <div id="condition_name" style="width: 100px; text-align: center; overflow: visible; clear: both;"></div>
+
+                    <table>
+                        <tr>
+                            <td><img src="img/cloud_coverage.png" title="Cloud coverage" /></td>
+                            <td><img src="img/humidity.png" title="Humidity" /></td>
+                            <td><img id="wind_direction" title="Wind direction:" src="img/wind_NE.png" /></td>
+                            <td><img src="img/sunrise.png" title="Sunrise" /></td>
+                            <td><img src="img/sunset.png" title="Sunset" /></td>
+                        </tr>
+                        <tr>
+                            <td><span id="cloud_coverage"></span> %<br />Base at <span id="cloud_base_value"></span> <span id="cloud_base_unit"></span></td>
+                            <td><span id="humidity"></span> %</td>
+                            <td><span id="wind_speed"></span> <span id="wind_unit"></span><span id="wind_gusts"></span><br /><span id="wind_heading"></span>&deg;</td>
+                            <td id="sunrise"></td>
+                            <td id="sunset"></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <script src="/vendor/jquery/jquery.dev.js"></script>
+        <script src="/vendor/semanticui/semantic.min.js"></script>
+        <script src="/script/main.js"></script>
+    </body>
+</html>
