@@ -149,9 +149,18 @@ function ComputeWeather(result)
 	$('#wind_unit').html(result.units.wind_speed);
 	$('#wind_heading').html(result.weather.wind_heading);
 
+	var hasGusts = false;
+
 	if (result.weather.wind_gusts !== undefined)
-		$("#wind_gusts").html("<br />Gusts up to " + result.weather.wind_gusts + " " + result.units.wind_speed);
-	else
+	{
+		if (result.weather.wind_gusts <= result.units.wind_speed)
+		{
+			$("#wind_gusts").html("<br />Gusts up to " + result.weather.wind_gusts + " " + result.units.wind_speed);
+			hasGusts = true;
+		}
+	}
+	
+	if (!hasGusts)
 		$("#wind_gusts").html("");
 
 	var sunrise = new Date(result.daylight.civil_twilight_begin);
