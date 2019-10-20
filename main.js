@@ -575,8 +575,8 @@ function ReadForecast(onDone, onError)
 				verdict = ((() => {
 					var minScore = 1.0;
 	
-					for(var score in latestCurrent.interpretation.scores)
-						minScore = Math.min(minScore, latestCurrent.interpretation.scores[score]);
+					for(var score in interpretation.scores)
+						minScore = Math.min(minScore, interpretation.scores[score]);
 						
 					return minScore;
 				})());
