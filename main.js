@@ -570,6 +570,17 @@ function ReadForecast(onDone, onError)
 				var decodedWeather = DecodeWeather(item);
 				var interpretation = InterpretWeather(decodedWeather);
 
+				var verdict = 1.0;
+
+				verdict = ((() => {
+					var minScore = 1.0;
+	
+					for(var score in latestCurrent.interpretation.scores)
+						minScore = Math.min(minScore, latestCurrent.interpretation.scores[score]);
+						
+					return minScore;
+				})());
+
 				// Simplified, less accurate day/night check to be easy on the sunrise-sunset server
 				var vfrConditionIconLetter = item.weather[0].icon.charAt(2);
 				interpretation.scores.vfrConditions = (vfrConditionIconLetter == "d" ? 1.0 : 0.0);
@@ -591,7 +602,7 @@ function ReadForecast(onDone, onError)
 					time:           itemDate.toISOString(),
 					weather:        decodedWeather,
 					interpretation: interpretation,
-					verdict:        Math.min(latestCurrent.verdict, interpretation.scores.vfrConditions)
+					verdict:        Math.min(verdict, interpretation.scores.vfrConditions)
 				});
 			});
 
