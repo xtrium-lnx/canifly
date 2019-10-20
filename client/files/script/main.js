@@ -7,7 +7,7 @@ function KphToMph(kph)          { return kph / 1.60934;      }
 function KtToKph(kt)            { return kt * 1.852;         }
 function KphToKt(kph)           { return kph / 1.852;        }
 
-function SetVerdictColor(v, vfr) {
+function ComputeVerdictColor(v, vfr) {
 	var red   = Math.max(0.0, Math.min(1.0, 2.0 * (1.0-v)));
 	var green = v;
 
@@ -15,20 +15,15 @@ function SetVerdictColor(v, vfr) {
 	green = Math.floor(255 * green);
 
 	if (vfr > 0)
-	{
-		$("#verdict_container").css("background-color", "rgb(" + red + ", " + green + ", 0)");
-		$("#verdict_container").css("color", "#000");
-	}
+		return [ "rgb(" + red + ", " + green + ", 0)", "#000" ];
 	else
-	{
-		$("#verdict_container").css("background-color", "rgb(16, 48, 128)");
-		$("#verdict_container").css("color", "#fff");
-	}
+		return [ "rgb(16, 48, 128)", "#fff" ];
 }
 
 function ComputeVerdict(result)
 {
-	$("<p style=\"opacity: 0.5;\">Overall comfort score: " + Math.floor(result.verdict * 100) + "%</p>").appendTo("#reasons");
+	if (result.verdict > 0.01)
+		$("<p style=\"opacity: 0.5;\">Overall comfort score: " + Math.floor(result.verdict * 100) + "%</p>").appendTo("#reasons");
 
 	if (result.verdict == 1.0)
 		$("#verdict_container").html("Yes");
@@ -90,7 +85,10 @@ function ComputeVerdict(result)
 		}
 	}
 
-	SetVerdictColor(result.verdict, result.interpretation.scores.vfrConditions);
+	var verdictColor = ComputeVerdictColor(result.verdict, result.interpretation.scores.vfrConditions);
+	
+	$("#verdict_container").css("background-color", verdictColor[0]);
+	$("#verdict_container").css("color", verdictColor[1]);
 }
 
 function ConvertAllUnits(result)
@@ -201,21 +199,43 @@ function ComputeWeather(result)
 	}
 }
 
+function ComputeForecast(current, forecast)
+{
+	var forecastGradient = "linear-gradient(to right,";
+
+	forecastGradient += ComputeVerdictColor(current.verdict, current.interpretation.scores.vfrConditions)[0];
+
+	forecast.forEach(function(item) {
+		forecastGradient += ", " + ComputeVerdictColor(item.verdict, 1)[0];
+	});
+
+	forecastGradient += ")";
+	console.log(forecastGradient);
+	$("#forecast_bar").css("background-image", forecastGradient);
+}
+
 $(document).ready(function() {
 	console.log("Can I Fly? v0.1.0");
 
-	$.get("/request", function(data) {
+	$.get("/current", function(currentData) {
 		$("#reasons").html("");
 
-		$('#location').html(data.result.location.lid + " (" + data.result.location.location.city + ", " + data.result.location.location.state + ", " + data.result.location.location.country + ")");
+		$('#location').html(currentData.result.location.lid + " (" + currentData.result.location.location.city + ", " + currentData.result.location.location.state + ", " + currentData.result.location.location.country + ")");
 
-		ComputeVerdict(data.result);
-		ComputeWeather(data.result);
+		ComputeVerdict(currentData.result);
+		ComputeWeather(currentData.result);
 
 		setTimeout(() => {
-			$("#data_container").css("visibility", "visible");
-			$("#loader").remove();
-		}, 500);
-		
+			$("#loader").html("Processing 5-day forecast...");
+			
+			$.get("/forecast", function(forecastData) {
+				ComputeForecast(currentData.result, forecastData.result);
+
+				setTimeout(() => {
+					$("#data_container").css("visibility", "visible");
+					$("#loader").remove();
+				}, 500);
+			});
+		}, 250);
 	});
 });

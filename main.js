@@ -45,6 +45,34 @@ app.use(express.static('client/files'));
 var settings = {};
 var lastStep = "location";
 
+function ProcessOneTimeSetup()
+{
+	console.log("Reading initial data...");
+	ReadCurrentWeather(
+		()    => { console.log("    Initial weather readout OK"); },
+		(err) => { console.log("    Initial weather readout failed: " + err); }
+	);
+
+	ReadForecast(
+		()    => { console.log("    Initial forecast readout OK"); },
+		(err) => { console.log("    Initial forecast readout failed: " + err); }
+	);
+
+	console.log("Setting up update loop...");
+
+	setInterval(() => {
+		ReadCurrentWeather(
+			()    => { console.log("Weather readout OK"); },
+			(err) => { console.log("Weather readout failed: " + err); }
+		);
+
+		ReadForecast(
+			()    => { console.log("Forecast readout OK"); },
+			(err) => { console.log("Forecast readout failed: " + err); }
+		);
+	}, requestTTL);
+}
+
 app.get("/setup", function(req, res) {
 	if (lastStep == "done")
 		res.redirect("/");
@@ -100,6 +128,8 @@ app.post("/setup/finish", function(req, res) {
 
 	fs.writeFileSync(path.join(__dirname + '/settings.json'), JSON.stringify(settings));
 	console.log("...Done.");
+
+	ProcessOneTimeSetup();
 
 	res.send({ result: "OK" });
 });
@@ -417,98 +447,171 @@ function InterpretWeather(weather) {
 }
 
 // ----------------------------------------------------------------------------
-// -- Main routes
 
-var lastTimestamp = 0;
-var lastRequest   = {};
+var lastTimestamp  = 0;
+var latestCurrent  = {};
+var latestForecast = [];
 
 var requestTTL    = (3600 * 1000) / 2; // 30 minutes
 
-app.get("/request", function(req, res) {
-	var now = Date.now();
+function ReadCurrentWeather(onDone, onError)
+{
+	var apt = airportDetails[settings.airport_lid];
 
-	if (now - lastTimestamp > requestTTL)
-	{
-		var apt = airportDetails[settings.airport_lid];
+	https.get("https://api.openweathermap.org/data/2.5/weather?lat=" + apt.location.latitude + "&lon=" + apt.location.longitude + "&appid=" + OPENWEATHERMAP_APPID, (resp) => {
+		let data = "";
 
-		https.get("https://api.openweathermap.org/data/2.5/weather?lat=" + apt.location.latitude + "&lon=" + apt.location.longitude + "&appid=" + OPENWEATHERMAP_APPID, (resp) => {
-			let data = "";
+		resp.on("data", (chunk) => { data += chunk; });
 
-			resp.on("data", (chunk) => { data += chunk; });
+		resp.on("end", () => {
+			var rawData = JSON.parse(data);
+			var decodedWeather = DecodeWeather(rawData);
+			var interpretation = InterpretWeather(decodedWeather);
 
-			resp.on("end", () => {
-				var rawData = JSON.parse(data);
-				var decodedWeather = DecodeWeather(rawData);
+			var verdict = 1.0;
+
+			latestCurrent = {
+				weather:        decodedWeather,
+				interpretation: interpretation,
+			};
+
+			latestCurrent["weather_icon"] = rawData.weather[0].icon;
+
+			latestCurrent["verdict"] = ((() => {
+				var minScore = 1.0;
+
+				for(var score in latestCurrent.interpretation.scores)
+					minScore = Math.min(minScore, latestCurrent.interpretation.scores[score]);
+					
+				return minScore;
+			})());
+
+			lastTimestamp = Date.now();
+			data = "";
+
+			https.get("https://api.sunrise-sunset.org/json?lat=" + apt.location.latitude + "&lng=" + apt.location.longitude + "&formatted=0", (resp) => {
+				resp.on("data", (chunk) => { data += chunk; });
+				resp.on("end", () => {
+					var decodedTimings = JSON.parse(data).results;
+
+					var dateNow   = new Date();
+					var vfr_start = new Date(decodedTimings.civil_twilight_begin);
+					var vfr_end   = new Date(decodedTimings.civil_twilight_end);
+	
+					var daylightResult = 1.0;
+
+					if (dateNow < vfr_start || dateNow > vfr_end)
+						daylightResult = 0.0;
+					else
+					{
+						var vfrEndMs = vfr_end.getTime();
+						var nowMs    = dateNow.getTime();
+						var dt       = (vfrEndMs - nowMs) / 60000;
+
+						if (dt < 30) // minutes
+							daylightResult = 0.5;
+					}
+					
+					latestCurrent.location                            = apt;
+					latestCurrent.daylight                            = decodedTimings;
+					latestCurrent.interpretation.scores.vfrConditions = daylightResult;
+					latestCurrent.units                               = settings.units;
+					latestCurrent.verdict                             = Math.min(latestCurrent.verdict, daylightResult);
+
+					onDone(latestCurrent);
+				});
+			});
+		}).on("error", (err) => {
+			lastTimestamp = 0;
+			onError("Unable to request daylight values: " + err.message);
+		});
+
+	}).on("error", (err) => {
+		lastTimestamp = 0;
+		onError("Unable to request weather: " + err.message);
+	});
+}
+
+function FormatForcastDate(date, format)
+{
+    var z = {
+        M: date.getMonth() + 1,
+        d: date.getDate(),
+        h: date.getHours(),
+        m: date.getMinutes(),
+        s: date.getSeconds()
+	};
+	
+    format = format.replace(/(M+|d+|h+|m+|s+)/g, function(v) {
+        return ((v.length > 1 ? "0" : "") + eval('z.' + v.slice(-1))).slice(-2);
+    });
+
+    return format.replace(/(y+)/g, function(v) {
+        return date.getFullYear().toString().slice(-v.length);
+    });
+}
+
+function ReadForecast(onDone, onError)
+{
+	var apt = airportDetails[settings.airport_lid];
+
+	https.get("https://api.openweathermap.org/data/2.5/forecast?lat=" + apt.location.latitude + "&lon=" + apt.location.longitude + "&appid=" + OPENWEATHERMAP_APPID, (resp) => {
+		let data = "";
+
+		resp.on("data", (chunk) => { data += chunk; });
+
+		resp.on("end", () => {
+			var rawData = JSON.parse(data);
+
+			var itemCount = rawData.list.length;
+
+			latestForecast = [];
+			rawData.list.forEach(function(item) {
+				var decodedWeather = DecodeWeather(item);
 				var interpretation = InterpretWeather(decodedWeather);
 
-				var verdict = 1.0;
+				// Simplified, less accurate day/night check to be easy on the sunrise-sunset server
+				var vfrConditionIconLetter = item.weather[0].icon.charAt(2);
+				interpretation.scores.vfrConditions = (vfrConditionIconLetter == "d" ? 1.0 : 0.0);
 
-				lastRequest = {
-					weather:        decodedWeather,
-					interpretation: interpretation,
-				};
-
-				lastRequest["weather_icon"] = rawData.weather[0].icon;
-
-				lastRequest["verdict"] = ((() => {
+				verdict = ((() => {
 					var minScore = 1.0;
-
-					for(var score in lastRequest.interpretation.scores)
-						minScore = Math.min(minScore, lastRequest.interpretation.scores[score]);
+	
+					for(var score in interpretation.scores)
+						minScore = Math.min(minScore, interpretation.scores[score]);
 						
 					return minScore;
 				})());
 
-				lastTimestamp = Date.now();
-				data = "";
+				var itemDate = new Date(item.dt * 1000);
 
-				https.get("https://api.sunrise-sunset.org/json?lat=" + apt.location.latitude + "&lng=" + apt.location.longitude + "&formatted=0", (resp) => {
-					resp.on("data", (chunk) => { data += chunk; });
-					resp.on("end", () => {
-						var decodedTimings = JSON.parse(data).results;
+				interpretation.scores.vfrConditions = 1;
 
-						var dateNow   = new Date();
-						var vfr_start = new Date(decodedTimings.civil_twilight_begin);
-						var vfr_end   = new Date(decodedTimings.civil_twilight_end);
-		
-						var daylightResult = 1.0;
-
-						if (dateNow < vfr_start || dateNow > vfr_end)
-							daylightResult = 0.0;
-						else
-						{
-							var vfrEndMs = vfr_end.getTime();
-							var nowMs    = dateNow.getTime();
-							var dt       = (vfrEndMs - nowMs) / 60000;
-
-							if (dt < 30) // minutes
-								daylightResult = 0.5;
-						}
-						
-						lastRequest.location                            = apt;
-						lastRequest.daylight                            = decodedTimings;
-						lastRequest.interpretation.scores.vfrConditions = daylightResult;
-						lastRequest.units                               = settings.units;
-						lastRequest.verdict                             = Math.min(lastRequest.verdict, daylightResult);
-
-						res.send({ result: lastRequest });
-					});
+				latestForecast.push({
+					time:           itemDate.toISOString(),
+					weather:        decodedWeather,
+					interpretation: interpretation,
+					verdict:        Math.min(latestCurrent.verdict, interpretation.scores.vfrConditions)
 				});
-			}).on("error", (err) => {
-				lastTimestamp = 0;
-				res.status(500).send({ error: "Unable to request daylight values: " + err.message });
 			});
 
-		}).on("error", (err) => {
-			lastTimestamp = 0;
-			res.status(500).send({ error: "Unable to request weather: " + err.message });
+			onDone();
 		});
-	}
-	else
-	{
-		console.log("Sending cached request");
-		res.send({ result: lastRequest });
-	}
+	}).on("error", (err) => {
+		lastTimestamp = 0;
+		onError("Unable to request forecast: " + err.message);
+	});
+}
+
+// ----------------------------------------------------------------------------
+// -- Main routes
+
+app.get("/current", function(req, res) {
+	res.send({ result: latestCurrent });
+});
+
+app.get("/forecast", function(req, res) {
+	res.send({ result: latestForecast });
 });
 
 // ----------------------------------------------------------------------------
@@ -522,8 +625,6 @@ app.get("/", function(req, res) {
 		return;
 	}
 
-	settings = JSON.parse(fs.readFileSync(path.join(__dirname + '/settings.json')));
-
 	res.sendFile(path.join(__dirname + '/client/index.html'));
 });
 
@@ -535,5 +636,8 @@ var server = app.listen(3133, function() {
 	console.log("Listening on port %s...", server.address().port);
 
 	if (fs.existsSync(path.join(__dirname + '/settings.json')))
+	{
 		settings = JSON.parse(fs.readFileSync(path.join(__dirname + '/settings.json')));
+		ProcessOneTimeSetup();
+	}
 });
