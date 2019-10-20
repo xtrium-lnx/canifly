@@ -596,8 +596,6 @@ function ReadForecast(onDone, onError)
 
 				var itemDate = new Date(item.dt * 1000);
 
-				interpretation.scores.vfrConditions = 1;
-
 				latestForecast.push({
 					time:           itemDate.toISOString(),
 					weather:        decodedWeather,
