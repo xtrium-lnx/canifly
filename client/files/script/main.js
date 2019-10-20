@@ -206,7 +206,7 @@ function ComputeForecast(current, forecast)
 	forecastGradient += ComputeVerdictColor(current.verdict, current.interpretation.scores.vfrConditions)[0];
 
 	forecast.forEach(function(item) {
-		forecastGradient += ", " + ComputeVerdictColor(item.verdict, 1)[0];
+		forecastGradient += ", " + ComputeVerdictColor(item.verdict, item.interpretation.scores.vfrConditions)[0];
 	});
 
 	forecastGradient += ")";
