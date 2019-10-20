@@ -118,3 +118,15 @@ td.image img.nogo {
 
 	background-color: #f0f;
 }
+
+.forecast_bar_items {
+	width: 100%;
+	height: 100%;
+	margin: 0px;
+	padding: 0px;
+}
+
+.forecast_bar_items tr, .forecast_bar_items tr td {
+	margin: 0px;
+	padding: 0px;
+}

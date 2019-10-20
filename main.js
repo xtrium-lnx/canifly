@@ -532,25 +532,6 @@ function ReadCurrentWeather(onDone, onError)
 	});
 }
 
-function FormatForcastDate(date, format)
-{
-    var z = {
-        M: date.getMonth() + 1,
-        d: date.getDate(),
-        h: date.getHours(),
-        m: date.getMinutes(),
-        s: date.getSeconds()
-	};
-	
-    format = format.replace(/(M+|d+|h+|m+|s+)/g, function(v) {
-        return ((v.length > 1 ? "0" : "") + eval('z.' + v.slice(-1))).slice(-2);
-    });
-
-    return format.replace(/(y+)/g, function(v) {
-        return date.getFullYear().toString().slice(-v.length);
-    });
-}
-
 function ReadForecast(onDone, onError)
 {
 	var apt = airportDetails[settings.airport_lid];

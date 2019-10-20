@@ -199,15 +199,57 @@ function ComputeWeather(result)
 	}
 }
 
+function FormatForcastDate(date, format)
+{
+    var z = {
+        M: date.getMonth() + 1,
+        d: date.getDate(),
+        h: date.getHours(),
+        m: date.getMinutes(),
+        s: date.getSeconds()
+	};
+	
+    format = format.replace(/(M+|d+|h+|m+|s+)/g, function(v) {
+        return ((v.length > 1 ? "0" : "") + eval('z.' + v.slice(-1))).slice(-2);
+    });
+
+    return format.replace(/(y+)/g, function(v) {
+        return date.getFullYear().toString().slice(-v.length);
+    });
+}
+
+function CreateNewForecastItem(item, tr, units)
+{
+	item.units = units;
+	ConvertAllUnits(item);
+
+	var data_title  = FormatForcastDate(new Date(item.time), "yyyy-MM-dd hh:mm");
+	var data_html   = "<h4>" + data_title + "</h4><ul>";
+	data_html      += "<li><span style='font-weight: bold;'>General weather: </span>" + item.weather.conditions.human_readable + "</li>";
+	data_html      += "<li><span style='font-weight: bold;'>Temperature: </span>" + item.weather.temperature + "&deg;" + units.temperature.toUpperCase() + " (dew point: " + item.weather.dew_point + "&deg;" + units.temperature.toUpperCase() + ")</li>";
+	data_html      += "<li><span style='font-weight: bold;'>Humidity: </span>" + item.weather.humidity + "%</li>";
+	data_html      += "<li><span style='font-weight: bold;'>Cloud coverage: </span>" + item.weather.cloud_coverage + "% / cloud base:  " + item.weather.cloud_base + " " + units.altitude + "</li>";
+	data_html      += "<li><span style='font-weight: bold;'>Wind: </span>" + item.weather.wind_direction + " (" + Math.floor(item.weather.wind_heading) + "&deg;), " + item.weather.wind_speed + " " + units.wind_speed + (item.weather.wind_gusts !== undefined ? (" gusting to " + item.weather.wind_gusts + " " + units.wind_speed) : "") + "</li>";
+	
+	data_html      += "</ul>";
+
+	var tooltip     = '<td class="forecast-item" data-variation="wide" data-position="bottom center" data-html="' + data_html + '"></td>';
+	$(tooltip).appendTo(tr);
+}
+
 function ComputeForecast(current, forecast)
 {
 	var forecastGradient = "linear-gradient(to right,";
+	$("#forecast_bar_item_contents").html("");
 
 	forecastGradient += ComputeVerdictColor(current.verdict, current.interpretation.scores.vfrConditions)[0];
 
 	forecast.forEach(function(item) {
 		forecastGradient += ", " + ComputeVerdictColor(item.verdict, item.interpretation.scores.vfrConditions)[0];
+		CreateNewForecastItem(item, $("#forecast_bar_item_contents"), current.units);
 	});
+
+	$('.forecast-item').popup();
 
 	forecastGradient += ")";
 	console.log(forecastGradient);
