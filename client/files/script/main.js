@@ -169,7 +169,7 @@ function ComputeWeather(result)
 		else
 		{
 			$('.wind.image img').addClass("warn");
-			$('.wind.content').addClass("warm");
+			$('.wind.content').addClass("warn");
 		}
 	}
 
@@ -221,7 +221,7 @@ function FormatForcastDate(date, format)
     });
 }
 
-function CreateNewForecastItem(item, color, tr, units)
+function CreateNewForecastItem(item, previousItem, color, units)
 {
 	item.units = units;
 	ConvertAllUnits(item);
@@ -243,7 +243,22 @@ function CreateNewForecastItem(item, color, tr, units)
 	data_html      += "</ul>";
 
 	var tooltip     = '<td class="forecast-item" data-variation="wide" data-position="bottom center" data-html="' + data_html + '" style="background-color: ' + color + ';"></td>';
-	$(tooltip).appendTo(tr);
+	$(tooltip).appendTo($("#forecast_bar_item_contents"));
+
+	if (previousItem != null)
+	{
+		var dateA = new Date(item.time).getDate();
+		var dateB = new Date(previousItem.time).getDate();
+
+		console.log(dateA + " => " + dateB);
+
+		if (dateA == dateB)
+			$("<td class='forecast-day-desc'></td>").appendTo($("#forecast_bar_item_dates"));
+		else
+			$("<td class='forecast-day-desc with-content'><div>" + FormatForcastDate(new Date(item.time), "yyyy-MM-dd") + "</div></td>").appendTo($("#forecast_bar_item_dates"));
+	}
+	else
+		$("<td class='forecast-day-desc'></td>").appendTo($("#forecast_bar_item_dates"));
 }
 
 function ComputeForecast(current, forecast)
@@ -254,19 +269,22 @@ function ComputeForecast(current, forecast)
 	var verdictColor = ComputeVerdictColor(current.verdict, current.interpretation.scores.vfrConditions)[0];
 	forecastGradient += verdictColor;
 
-	CreateNewForecastItem(current, verdictColor, $("#forecast_bar_item_contents"), current.units);
+	CreateNewForecastItem(current, null, verdictColor, current.units);
+
+	var previousItem = current;
 
 	forecast.forEach(function(item) {
 		verdictColor = ComputeVerdictColor(item.verdict, item.interpretation.scores.vfrConditions)[0];
 		forecastGradient += ", " + verdictColor;
-		CreateNewForecastItem(item, verdictColor, $("#forecast_bar_item_contents"), current.units);
+		CreateNewForecastItem(item, previousItem, verdictColor, current.units);
+		previousItem = item;
 	});
 
 	$('.forecast-item').popup();
 
 	forecastGradient += ")";
 	console.log(forecastGradient);
-	$("#forecast_bar").css("background-image", forecastGradient);
+	$("#forecast_bar_item_contents").css("background-image", forecastGradient);
 }
 
 $(document).ready(function() {

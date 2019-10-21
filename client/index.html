@@ -8,7 +8,7 @@
     </head>
 
     <body class="ui site mainpage">
-        <div class="ui container" id="main_container" style="width: 720px;">
+        <div class="ui container" id="main_container" style="width: 720px; overflow-x: hidden;">
             <div class="ui centered container">
                 <div class="ui one column stackable center aligned page grid">
                     <img class="setup header" src="/ulm-pendulaire.png" />
@@ -68,6 +68,11 @@
                 <div id="forecast_bar">
                     <table class="forecast_bar_items" cellspacing="0">
                         <tr id="forecast_bar_item_contents"></tr>
+                    </table>
+                </div>
+                <div>
+                    <table id="forecast_dates" cellspacing="0">
+                        <tr id="forecast_bar_item_dates"></tr>
                     </table>
                 </div>
             </div>

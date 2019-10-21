@@ -516,6 +516,7 @@ function ReadCurrentWeather(onDone, onError)
 					latestCurrent.daylight                            = decodedTimings;
 					latestCurrent.interpretation.scores.vfrConditions = daylightResult;
 					latestCurrent.units                               = settings.units;
+					latestCurrent.time                                = dateNow;
 					latestCurrent.verdict                             = Math.min(latestCurrent.verdict, daylightResult);
 
 					onDone(latestCurrent);
