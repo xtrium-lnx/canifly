@@ -133,7 +133,7 @@ td.image img.nogo {
 
 .forecast_bar_items tr td {
 	opacity: 0.0;
-	border: 1px solid #aaa;
+	border: 1px solid #777;
 }
 
 .forecast_bar_items tr td:hover {
