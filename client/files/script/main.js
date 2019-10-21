@@ -8,6 +8,8 @@ function KtToKph(kt)            { return kt * 1.852;         }
 function KphToKt(kph)           { return kph / 1.852;        }
 
 function ComputeVerdictColor(v, vfr) {
+	v = v * 0.6 + 0.2;
+
 	var red   = Math.max(0.0, Math.min(1.0, 2.0 * (1.0-v)));
 	var green = v;
 
@@ -218,13 +220,19 @@ function FormatForcastDate(date, format)
     });
 }
 
-function CreateNewForecastItem(item, tr, units)
+function CreateNewForecastItem(item, color, tr, units)
 {
 	item.units = units;
 	ConvertAllUnits(item);
 
-	var data_title  = FormatForcastDate(new Date(item.time), "yyyy-MM-dd hh:mm");
-	var data_html   = "<h4>" + data_title + "</h4><ul>";
+	var data_datetime  = FormatForcastDate(new Date(item.time), "yyyy-MM-dd hh:mm");
+
+	var data_comfort = "Comfort score: " + Math.floor(item.verdict * 100) + "%";
+
+	if (item.interpretation.scores.vfrConditions == 0.0)
+		data_comfort = "Night";
+
+	var data_html   = "<h4>" + data_datetime + " - " + data_comfort + "</h4><ul>";
 	data_html      += "<li><span style='font-weight: bold;'>General weather: </span>" + item.weather.conditions.human_readable + "</li>";
 	data_html      += "<li><span style='font-weight: bold;'>Temperature: </span>" + item.weather.temperature + "&deg;" + units.temperature.toUpperCase() + " (dew point: " + item.weather.dew_point + "&deg;" + units.temperature.toUpperCase() + ")</li>";
 	data_html      += "<li><span style='font-weight: bold;'>Humidity: </span>" + item.weather.humidity + "%</li>";
@@ -233,7 +241,7 @@ function CreateNewForecastItem(item, tr, units)
 	
 	data_html      += "</ul>";
 
-	var tooltip     = '<td class="forecast-item" data-variation="wide" data-position="bottom center" data-html="' + data_html + '"></td>';
+	var tooltip     = '<td class="forecast-item" data-variation="wide" data-position="bottom center" data-html="' + data_html + '" style="background-color: ' + color + ';"></td>';
 	$(tooltip).appendTo(tr);
 }
 
@@ -242,11 +250,15 @@ function ComputeForecast(current, forecast)
 	var forecastGradient = "linear-gradient(to right,";
 	$("#forecast_bar_item_contents").html("");
 
-	forecastGradient += ComputeVerdictColor(current.verdict, current.interpretation.scores.vfrConditions)[0];
+	var verdictColor = ComputeVerdictColor(current.verdict, current.interpretation.scores.vfrConditions)[0];
+	forecastGradient += verdictColor;
+
+	CreateNewForecastItem(current, verdictColor, $("#forecast_bar_item_contents"), current.units);
 
 	forecast.forEach(function(item) {
-		forecastGradient += ", " + ComputeVerdictColor(item.verdict, item.interpretation.scores.vfrConditions)[0];
-		CreateNewForecastItem(item, $("#forecast_bar_item_contents"), current.units);
+		verdictColor = ComputeVerdictColor(item.verdict, item.interpretation.scores.vfrConditions)[0];
+		forecastGradient += ", " + verdictColor;
+		CreateNewForecastItem(item, verdictColor, $("#forecast_bar_item_contents"), current.units);
 	});
 
 	$('.forecast-item').popup();
