@@ -8,7 +8,8 @@ function KtToKph(kt)            { return kt * 1.852;         }
 function KphToKt(kph)           { return kph / 1.852;        }
 
 function ComputeVerdictColor(v, vfr) {
-	v = v * 0.6 + 0.2;
+	if (v < 1.0 && v > 0.0)
+		v = v * 0.6 + 0.2;
 
 	var red   = Math.max(0.0, Math.min(1.0, 2.0 * (1.0-v)));
 	var green = v;
