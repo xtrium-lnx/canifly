@@ -147,8 +147,10 @@ td.image img.nogo {
 
 .forecast-day-desc {
 	height: 18px;
-	min-width: 18px;
 	width: 18px;
+
+	margin: 0px;
+	padding: 0px;
 }
 
 .forecast-day-desc div {
